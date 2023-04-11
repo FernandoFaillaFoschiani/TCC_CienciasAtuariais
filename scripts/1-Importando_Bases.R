@@ -61,7 +61,7 @@ if (!file.exists("bases/operadoras")) {
 
 
 for (i in c(1:23)) {
-  for (j in c(1:4)) {
+  for (j in c(1:12)) {
     url <- paste('https://dadosabertos.ans.gov.br/FTP/Base_de_dados/Microdados/dados_dbc/beneficiarios/operadoras/tb_cc_',anos_mun[i],'-',tri_mun[j],'.dbc',sep = "")
     filename <- paste('bases/operadoras/tb_cc_',anos_mun[i],'-',tri_mun[j],'.dbc',sep = "")
     tryCatch(
@@ -84,7 +84,7 @@ if (!file.exists("bases/tx_cobertura")) {
 
 
 for (i in c(1:23)) {
-  for (j in c(1:4)) {
+  for (j in c(1:12)) {
     url <- paste('https://dadosabertos.ans.gov.br/FTP/Base_de_dados/Microdados/dados_dbc/beneficiarios/taxa_cobertura/tb_tx_',anos_mun[i],'-',tri_mun[j],'.dbc',sep = "")
     filename <- paste('bases/tx_cobertura/tb_tx_',anos_mun[i],'-',tri_mun[j],'.dbc',sep = "")
     tryCatch(
@@ -108,7 +108,7 @@ if (!file.exists("bases/uf_regiao_metropolitana_e_capital")) {
 
 
 for (i in c(1:23)) {
-  for (j in c(1:4)) {
+  for (j in c(1:12)) {
     url <- paste('https://dadosabertos.ans.gov.br/FTP/Base_de_dados/Microdados/dados_dbc/beneficiarios/uf_regiao_metropolitana_e_capital/tb_br_',anos_mun[i],'-',tri_mun[j],'.dbc',sep = "")
     filename <- paste('bases/uf_regiao_metropolitana_e_capital/tb_br_',anos_mun[i],'-',tri_mun[j],'.dbc',sep = "")
     tryCatch(
