@@ -121,3 +121,46 @@ for (i in c(1:23)) {
     )
   }
 }
+
+
+## Download contraprestações
+
+if (!file.exists("bases/contraprestacao_despesas")) {
+  dir.create("bases/contraprestacao_despesas", recursive = TRUE)
+}
+
+
+for (i in c(1:23)) {
+    url <- paste('https://dadosabertos.ans.gov.br/FTP/Base_de_dados/Microdados/dados_dbc/operadoras/receita_de_contraprest_e_despesas/tb_rc_',anos_mun[i],'.dbc',sep = "")
+    filename <- paste('bases/contraprestacao_despesas/tb_rc_',anos_mun[i],'.dbc',sep = "")
+    tryCatch(
+      {
+        download.file(url, filename)
+      },
+      error = function(e) {
+        message(sprintf("Falha ao baixar arquivo %s. Erro: %s", filename, e$message))
+      }
+    )
+  
+}
+
+## Download ressarcimento sus
+
+if (!file.exists("bases/sus")) {
+  dir.create("bases/sus", recursive = TRUE)
+}
+
+
+for (i in c(1:23)) {
+  url <- paste('https://dadosabertos.ans.gov.br/FTP/Base_de_dados/Microdados/dados_dbc/ressarcimento_ao_sus/tb_res_',anos_mun[i],'.dbc',sep = "")
+  filename <- paste('bases/sus/tb_res_',anos_mun[i],'.dbc',sep = "")
+  tryCatch(
+    {
+      download.file(url, filename)
+    },
+    error = function(e) {
+      message(sprintf("Falha ao baixar arquivo %s. Erro: %s", filename, e$message))
+    }
+  )
+  
+}

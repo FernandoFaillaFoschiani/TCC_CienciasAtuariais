@@ -1,0 +1,165 @@
+---
+title: "Exportaoria"
+author: "Fernando F. Foschiani"
+date: "2023-04-23"
+output:
+  pdf_document: default
+  html_document: default
+editor_options:
+  chunk_output_type: console
+---
+
+```{r}
+library(read.dbc)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(data.table)
+library(forcats)
+library(dbplyr)
+library(tibble)
+```
+
+```{r}
+tb_res <- c(2011,2021) %>% 
+  purrr::map_chr(function(x) paste("/home/fernando/Documentos/TCC/bases/sus/tb_res_", x, ".dbc", sep = "")) %>%
+  purrr::map(function(file){
+    if(file.exists(file)){
+      df <- read.dbc(file)
+      df$fileName <- file
+      return(df)
+    } else {
+      message(paste("O arquivo", file, "não existe ou não pode ser acessado."))
+      return(NULL)
+    }
+  }) %>% 
+  dplyr::bind_rows() %>% 
+  tibble::tibble()
+
+
+```
+
+
+```{r}
+tema_unifesp <- function(){
+  list(scale_color_manual(values = c('#168f38','#968f38')),
+       scale_fill_manual(values = c('#168f38','#968f38')))
+}
+```
+
+
+```{r}
+
+tb_res %>%
+  dplyr::mutate(CD_FAIXA_E = case_when(CD_FAIXA_E == '00' ~  '0 a 1 ano',
+                                CD_FAIXA_E == '01' ~  '01 a 4 anos',
+                                CD_FAIXA_E == '02' ~  '05 a 9 anos',
+                                CD_FAIXA_E == '03' ~  '10 a 14 anos',
+                                CD_FAIXA_E == '04' | CD_FAIXA_E == '05'  ~  '15 a 19 anos',
+                                CD_FAIXA_E == '06' | CD_FAIXA_E == '07'  ~  '20 a 24 anos',
+                                CD_FAIXA_E == '08' | CD_FAIXA_E == '09'  ~  '25 a 29 anos',
+                                CD_FAIXA_E == '10' | CD_FAIXA_E == '11'  ~  '30 a 34 anos',
+                                CD_FAIXA_E == '12' | CD_FAIXA_E == '13'  ~  '35 a 39 anos',
+                                CD_FAIXA_E == '14' | CD_FAIXA_E == '15'  ~  '40 a 44 anos',
+                                CD_FAIXA_E == '16' | CD_FAIXA_E == '17'  ~  '45 a 49 anos',
+                                CD_FAIXA_E == '18' | CD_FAIXA_E == '19'  ~  '50 a 54 anos',
+                                CD_FAIXA_E == '20' | CD_FAIXA_E == '21'  ~  '55 a 59 anos',
+                                CD_FAIXA_E == '22' ~  '60 a 64 anos',
+                                CD_FAIXA_E == '23' ~  '65 a 69 anos',
+                                CD_FAIXA_E == '24' ~  '70 a 74 anos',
+                                CD_FAIXA_E == '25' ~  '75 a 79 anos',
+                                CD_FAIXA_E == '26' ~  '80 a 85 anos',
+                                CD_FAIXA_E == '27' ~  '86 ou mais',
+                                CD_FAIXA_E == '99' ~  'Idade inconsistente')) %>%
+  count(CD_FAIXA_E,SEXO) %>%
+  mutate(n = ifelse(SEXO == '1', n * -1,n)) %>%
+  mutate(SEXO = ifelse(SEXO ==  1 ,"Masculino","Feminino")) %>%
+  ggplot(aes(x = CD_FAIXA_E, y = n, fill = SEXO))+
+  geom_col(alpha = 0.75)+
+  coord_flip() +
+  geom_label(aes(y = n, x = CD_FAIXA_E, fill = SEXO, label = scales::number(abs(n/1000), accuracy = 0.1, suffix = "Mil") ), angle = 90, col = "white", show.legend = FALSE)+
+  labs(x = "",
+       y = "",
+       title = "Pirâmide Etária de Pacientes Internados no SUS") +
+  tema_unifesp()+
+  theme_classic()+
+  expand_limits(y = c(-20000,30000)) +
+  theme(axis.text.x = element_blank(),
+        plot.title = element_text(face= "bold", size = 24),
+        plot.subtitle = element_text(size = 16))
+
+tb_res %>% 
+mutate(CD_FAIXA_E = case_when(CD_FAIXA_E == '00' ~  '0 a 1 ano',
+                              CD_FAIXA_E == '01' ~  '01 a 4 anos',
+                              CD_FAIXA_E == '02' ~  '05 a 9 anos',
+                              CD_FAIXA_E == '03' ~  '10 a 14 anos',
+                              CD_FAIXA_E == '04' | CD_FAIXA_E == '05'  ~  '15 a 19 anos',
+                              CD_FAIXA_E == '06' | CD_FAIXA_E == '07'  ~  '20 a 24 anos',
+                              CD_FAIXA_E == '08' | CD_FAIXA_E == '09'  ~  '25 a 29 anos',
+                              CD_FAIXA_E == '10' | CD_FAIXA_E == '11'  ~  '30 a 34 anos',
+                              CD_FAIXA_E == '12' | CD_FAIXA_E == '13'  ~  '35 a 39 anos',
+                              CD_FAIXA_E == '14' | CD_FAIXA_E == '15'  ~  '40 a 44 anos',
+                              CD_FAIXA_E == '16' | CD_FAIXA_E == '17'  ~  '45 a 49 anos',
+                              CD_FAIXA_E == '18' | CD_FAIXA_E == '19'  ~  '50 a 54 anos',
+                              CD_FAIXA_E == '20' | CD_FAIXA_E == '21'  ~  '55 a 59 anos',
+                              CD_FAIXA_E == '22' ~  '60 a 64 anos',
+                              CD_FAIXA_E == '23' ~  '65 a 69 anos',
+                              CD_FAIXA_E == '24' ~  '70 a 74 anos',
+                              CD_FAIXA_E == '25' ~  '75 a 79 anos',
+                              CD_FAIXA_E == '26' ~  '80 a 85 anos',
+                              CD_FAIXA_E == '27' ~  '86 ou mais',
+                              CD_FAIXA_E == '99' ~  'Idade inconsistente')) %>%
+  mutate(CMPT = as.character(CMPT)) %>%
+  mutate(SEXO = ifelse(SEXO == 1, 'Masculino','Feminino')) %>%
+  mutate(curva = paste(CMPT,SEXO)) %>%
+  group_by(CD_FAIXA_E,curva) %>%
+  summarise(VL_TOTAL_A = sum(VL_TOTAL_A))  %>%
+  mutate(Sexo = ifelse(curva %like% 'Feminino', 'Feminino', 'Masculino'),
+         Ano = ifelse(curva %like% '2011','2011','2021')) %>%
+  ggplot(aes(x = CD_FAIXA_E, y = VL_TOTAL_A, col = curva)) +
+  geom_line(aes(group =curva, col = Sexo, linetype = Ano),size = 1.25) +
+  geom_text(aes(x = CD_FAIXA_E, y = VL_TOTAL_A + 1000000, label = scales::number(VL_TOTAL_A/1000000, accuracy = 0.1, suffix = "M") , col = Sexo),
+            check_overlap = TRUE, show.legend = FALSE) +
+  scale_y_continuous(labels = scales::comma_format(big.mark = '.')) +
+  labs(y = "Valor Total de AIH's",
+       title = "Custo de Internações no SUS por Idade",
+       subtitle = "De beneficiários de planos privados entre 2011 e 2021",
+       col = 'Sexo',
+       x = 'Faixas de Idade')+
+  theme_bw() +
+  theme(plot.title = element_text(face= "bold", size = 24),
+        plot.subtitle = element_text(size = 16),
+        axis.title.x = element_text(face = 'bold', size = 14),
+        axis.title.y = element_text(face = 'bold', size = 14)) +
+  scale_color_manual(values = c('#168f38','#968f38'))
+
+
+tb_res %>%
+  mutate(INTERNA = as.numeric(INTERNA)) %>%
+  group_by(SG_UF) %>%
+  summarise(INTERNA = sum(INTERNA), VL_TOTAL_A = sum(VL_TOTAL_A)) %>%
+  mutate(VL_MEDIO_INTERNACAO = VL_TOTAL_A/INTERNA) %>%
+  arrange(desc(VL_MEDIO_INTERNACAO)) %>%
+  mutate(SG_UF = fct_reorder(SG_UF, VL_MEDIO_INTERNACAO)) %>%
+  ggplot(aes(y = SG_UF, x = VL_MEDIO_INTERNACAO)) +
+  geom_col(fill = '#168f38') +
+  geom_label(aes(x = VL_MEDIO_INTERNACAO, y = SG_UF, label = scales::dollar(VL_MEDIO_INTERNACAO,prefix = "R$",   big.mark = ".",decimal.mark = ',')),
+             fill = '#168f38', color = 'white', fontface = "bold") +
+  labs(title = "Valor Médio de Internação no SUS",
+       subtitle = 'Por Estado',
+       y = '',
+       x = '') +
+  scale_x_continuous(labels = scales::dollar_format(prefix = "R$",big.mark = "."  ))+
+  theme_bw() +
+  theme(plot.title = element_text(face= "bold", size = 24),
+        plot.subtitle = element_text(size = 16),
+        axis.text.x =  element_text(face = 'bold', size = 9),
+        axis.text.y = element_text(face = 'bold', size = 9))
+
+
+```
+
+
+
+
+
